@@ -1,6 +1,8 @@
 import type { Route } from "./+types/index";
 import type { Project } from "../../types";
 import ProjectsList from "../../components/ProjectsList";
+import { useState } from "react";
+import Pagination from "../../components/Pagination";
 
 export async function loader({
   request,
@@ -13,12 +15,34 @@ export async function loader({
 
 const ProjectsPage = ({ loaderData }: Route.ComponentProps) => {
   const { projects } = loaderData as { projects: Project[] };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const projectsPerPage = 6;
+
+  // calculate total pages
+  const totalPages = Math.ceil(projects.length / projectsPerPage);
+
+  // get current page projects
+  const indexOfLastProject = currentPage * projectsPerPage;
+  const indexOfFirstProject = indexOfLastProject - projectsPerPage;
+  const currentProjects = projects.slice(
+    indexOfFirstProject,
+    indexOfLastProject
+  );
+
   return (
     <>
       <h2 className="text-3xl text-white font-bold mb-8 text-center">
         💼 Projects
       </h2>
-      <ProjectsList projects={projects} />
+      <ProjectsList projects={currentProjects} />
+      {
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      }
     </>
   );
 };
