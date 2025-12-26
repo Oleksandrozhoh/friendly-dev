@@ -2,22 +2,17 @@ import type { Route } from "./+types/details";
 import type { Project } from "../../types";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link } from "react-router";
+import { supabase } from "../../lib/supabase.server";
 
-export async function clientLoader({
-  request,
-  params,
-}: Route.ClientLoaderArgs): Promise<Project> {
+export async function loader({ params }: Route.LoaderArgs): Promise<Project> {
   const { id } = params;
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/projects/${id}`);
-  console.log(res);
-  if (!res.ok)
-    throw new Response("Failed to fetch project details", { status: 404 });
-  const project: Project = await res.json();
-  return project;
-}
-
-function HydrateFallback() {
-  return <div>Loading project details...</div>;
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error) throw new Error("Failed to fetch projects");
+  return data;
 }
 
 const ProjectDetailsPage = ({ loaderData }: Route.ComponentProps) => {

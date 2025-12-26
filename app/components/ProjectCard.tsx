@@ -6,7 +6,6 @@ const ProjectCard = ({ project }: { project: Project }) => {
     <Link
       className="block transform transition duration-300 hover:scale-[1.05]"
       to={`/projects/${project.id}`}
-      target="_blank"
       rel="noopener noreferrer"
     >
       <div className="bg-gray-800 h-full border border-gray-700 rounded-lg overflow-hidden shadow-sm transition hover:shadow-md">

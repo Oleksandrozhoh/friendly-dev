@@ -8,6 +8,7 @@ export default [
     route('projects', './routes/projects/index.tsx'),
     route('projects/:id', './routes/projects/details.tsx'),
     route('blog', './routes/blog/index.tsx'),
-    route('*', './routes/errors/not-found.tsx'),
+    route('blog/:slug', './routes/blog/details.tsx'),
+    route('*', './routes/errors/not-found.tsx'), // Catch-all route for 404 Not Found
   ])
 ] satisfies RouteConfig;

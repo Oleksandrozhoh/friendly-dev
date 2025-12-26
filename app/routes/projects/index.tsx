@@ -3,13 +3,13 @@ import type { Project } from "../../types";
 import ProjectsList from "../../components/ProjectsList";
 import { useState } from "react";
 import Pagination from "../../components/Pagination";
+import { supabase } from "../../lib/supabase.server";
 
 export async function loader({
   request,
 }: Route.LoaderArgs): Promise<{ projects: Project[] }> {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/projects`);
-  if (!res.ok) throw new Error("Failed to fetch projects");
-  const data = await res.json();
+  const { data, error } = await supabase.from("projects").select("*");
+  if (error) throw new Error("Failed to fetch projects");
   return { projects: data };
 }
 
