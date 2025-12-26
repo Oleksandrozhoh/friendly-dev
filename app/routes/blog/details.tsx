@@ -8,6 +8,18 @@ export async function loader({
   params,
 }: Route.LoaderArgs): Promise<{ blogPost: string; meta: BlogPostMeta }> {
   const { slug } = params;
+
+  // Validate the slug (user controlled input - always validate!)
+  if (
+    !slug ||
+    slug.includes("..") ||
+    slug.includes("/") ||
+    slug.includes("\\") ||
+    !slug.match(/^[a-zA-Z0-9-_]+$/)
+  ) {
+    throw new Error("Invalid blog post slug");
+  }
+
   const blogPost = await import(`../../blogPosts/${slug}.md?raw`);
 
   if (!blogPost) throw new Error("Blog post not found");

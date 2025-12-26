@@ -22,20 +22,20 @@ const BlogPage = ({ loaderData }: Route.ComponentProps) => {
     post.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Sort posts by date in descending order
+  const sortedPosts = [...filteredPosts].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 5;
 
   // Calculate the indices for slicing the posts array
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
 
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-
-  // Sort posts by date in descending order
-  currentPosts.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  const totalPages = Math.ceil(sortedPosts.length / postsPerPage);
 
   return (
     <>
