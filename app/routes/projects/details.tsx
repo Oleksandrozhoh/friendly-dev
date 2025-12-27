@@ -45,6 +45,7 @@ const ProjectDetailsPage = ({ loaderData }: Route.ComponentProps) => {
             <a
               href={project.url}
               target="_blank"
+              rel="noopener noreferrer"
               className="inline-block text-white bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg transition"
             >
               Visit Project →

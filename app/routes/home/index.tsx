@@ -4,6 +4,7 @@ import FeaturedProject from "~/components/FeaturedProject";
 import AboutPreview from "~/components/AboutPreview";
 import type { BlogPostMeta } from "../../types";
 import BlogPostCard from "../../components/BlogPostCard";
+import { supabase } from "~/lib/supabase.server";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -22,23 +23,23 @@ export async function loader({ request }: Route.LoaderArgs): Promise<{
   const url = new URL("/posts-meta.json", request.url);
 
   const [projectsResponse, postsMetaResponse] = await Promise.all([
-    fetch(`${import.meta.env.VITE_API_URL}/projects`),
-    fetch(url.toString()),
+    await supabase.from("projects").select("*"),
+    await supabase.from("blog_posts").select("*"),
   ]);
 
-  if (!projectsResponse.ok) {
+  if (!projectsResponse) {
     throw new Error("Failed to fetch projects");
   }
-  if (!postsMetaResponse.ok) {
+  if (!postsMetaResponse) {
     throw new Error("Failed to fetch blog posts metadata");
   }
 
   const [projects, postsMeta] = await Promise.all([
-    projectsResponse.json(),
-    postsMetaResponse.json(),
+    projectsResponse.data ?? [],
+    postsMetaResponse.data,
   ]);
 
-  const latestPostsMeta = postsMeta
+  const latestPostsMeta = (postsMeta as BlogPostMeta[])
     .sort(
       (a: BlogPostMeta, b: BlogPostMeta) =>
         new Date(b.date).getTime() - new Date(a.date).getTime()
