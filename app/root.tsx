@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import Navbar from "./components/Navbar";
+import { createSupabaseClient } from "~/lib/supabase.server";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -34,6 +35,16 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+// app/root.tsx or app/routes/layout.tsx
+export async function loader({ request }: Route.LoaderArgs) {
+  const { supabase } = createSupabaseClient(request);
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  return { user: session?.user ?? null };
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -44,8 +55,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <Navbar />
-        <main>{children}</main>
+        {children}
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -53,8 +63,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  return <Outlet />;
+export default function App({ loaderData }: Route.ComponentProps) {
+  const { user } = loaderData;
+
+  return (
+    <>
+      <Navbar user={user} />
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

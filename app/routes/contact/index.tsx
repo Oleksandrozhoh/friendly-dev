@@ -1,8 +1,9 @@
 import type { Route } from "./+types/index";
 import { Form } from "react-router";
-import { supabase } from "~/lib/supabase.server";
+import { createSupabaseClient } from "~/lib/supabase.server";
 
 export async function action({ request }: Route.ActionArgs) {
+  const { supabase } = createSupabaseClient(request);
   const formData = await request.formData();
 
   // Extract and sanitize form data
@@ -22,7 +23,9 @@ export async function action({ request }: Route.ActionArgs) {
   } else if (name.length > 100) {
     errors.push("Name must be less than 100 characters");
   } else if (!/^[a-zA-Z\s'-]+$/.test(name)) {
-    errors.push("Name can only contain letters, spaces, hyphens, and apostrophes");
+    errors.push(
+      "Name can only contain letters, spaces, hyphens, and apostrophes"
+    );
   }
 
   // Validate email
@@ -52,7 +55,7 @@ export async function action({ request }: Route.ActionArgs) {
   if (errors.length > 0) {
     return {
       success: false,
-      errors: errors
+      errors: errors,
     };
   }
 
@@ -69,7 +72,7 @@ export async function action({ request }: Route.ActionArgs) {
   if (error) {
     return {
       success: false,
-      errors: ["Failed to submit form. Please try again later."]
+      errors: ["Failed to submit form. Please try again later."],
     };
   }
 
@@ -97,10 +100,14 @@ const ContactPage = ({ actionData }: Route.ComponentProps) => {
         {/* Error messages */}
         {actionData?.success === false && actionData.errors && (
           <div className="mb-6 p-4 bg-red-900/50 border border-red-500 rounded-lg text-left">
-            <p className="text-red-400 font-semibold mb-2">Please fix the following errors:</p>
+            <p className="text-red-400 font-semibold mb-2">
+              Please fix the following errors:
+            </p>
             <ul className="list-disc list-inside space-y-1">
               {actionData.errors.map((error: string, index: number) => (
-                <li key={index} className="text-red-300">{error}</li>
+                <li key={index} className="text-red-300">
+                  {error}
+                </li>
               ))}
             </ul>
           </div>

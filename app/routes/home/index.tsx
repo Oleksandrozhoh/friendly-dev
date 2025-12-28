@@ -4,7 +4,7 @@ import FeaturedProject from "~/components/FeaturedProject";
 import AboutPreview from "~/components/AboutPreview";
 import type { BlogPostMeta } from "../../types";
 import BlogPostCard from "../../components/BlogPostCard";
-import { supabase } from "~/lib/supabase.server";
+import { createSupabaseClient } from "~/lib/supabase.server";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -20,7 +20,7 @@ export async function loader({ request }: Route.LoaderArgs): Promise<{
   projects: Project[];
   postsMeta: BlogPostMeta[];
 }> {
-  const url = new URL("/posts-meta.json", request.url);
+  const { supabase } = createSupabaseClient(request);
 
   const [projectsResponse, postsMetaResponse] = await Promise.all([
     await supabase.from("projects").select("*"),
@@ -45,7 +45,10 @@ export async function loader({ request }: Route.LoaderArgs): Promise<{
         new Date(b.date).getTime() - new Date(a.date).getTime()
     )
     .slice(0, 3);
-  return { projects: projects, postsMeta: latestPostsMeta };
+  return {
+    projects: projects,
+    postsMeta: latestPostsMeta,
+  };
 }
 
 const HomePage = ({ loaderData }: Route.ComponentProps) => {

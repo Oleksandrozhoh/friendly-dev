@@ -1,8 +1,9 @@
 import { NavLink } from "react-router";
 import { FaLaptopCode, FaTimes, FaBars } from "react-icons/fa";
 import { useState } from "react";
+import type { Route } from "../+types/root";
 
-const Navbar = () => {
+const Navbar = ({ user }: { user: any }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const base = "transition hover:text-blue-400";
@@ -52,6 +53,21 @@ const Navbar = () => {
             >
               Contact
             </NavLink>
+            {!user ? (
+              <NavLink
+                className={({ isActive }: { isActive: boolean }) =>
+                  (isActive ? active : base) +
+                  " ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                }
+                to="/login"
+              >
+                Log in
+              </NavLink>
+            ) : (
+              <span className="inline-block ml-4 px-4 py-2 bg-green-600 text-white rounded-lg">
+                Signed in
+              </span>
+            )}
           </div>
         </div>
 
@@ -113,6 +129,17 @@ const Navbar = () => {
           >
             Contact
           </NavLink>
+          {!user && (
+            <NavLink
+              onClick={() => {
+                setMenuOpen(false);
+              }}
+              className={({ isActive }) => (isActive ? active : base)}
+              to="/login"
+            >
+              Log in
+            </NavLink>
+          )}
         </div>
       )}
     </nav>

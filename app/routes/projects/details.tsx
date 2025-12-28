@@ -2,9 +2,13 @@ import type { Route } from "./+types/details";
 import type { Project } from "../../types";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link } from "react-router";
-import { supabase } from "../../lib/supabase.server";
+import { createSupabaseClient } from "../../lib/supabase.server";
 
-export async function loader({ params }: Route.LoaderArgs): Promise<Project> {
+export async function loader({
+  params,
+  request,
+}: Route.LoaderArgs): Promise<Project> {
+  const { supabase } = createSupabaseClient(request);
   const { id } = params;
   const { data, error } = await supabase
     .from("projects")

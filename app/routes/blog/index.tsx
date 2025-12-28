@@ -3,11 +3,12 @@ import type { BlogPostMeta } from "../../types";
 import { useState } from "react";
 import Pagination from "~/components/Pagination";
 import BlogPostCard from "../../components/BlogPostCard";
-import { supabase } from "../../lib/supabase.server";
+import { createSupabaseClient } from "../../lib/supabase.server";
 
-export async function loader(): Promise<{
+export async function loader({ request }: Route.LoaderArgs): Promise<{
   posts: BlogPostMeta[];
 }> {
+  const { supabase } = createSupabaseClient(request);
   const { data, error } = await supabase.from("blog_posts").select("*");
   if (error) throw new Error("Failed to fetch blog posts from database");
   return { posts: data };

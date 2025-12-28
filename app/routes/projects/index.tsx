@@ -3,11 +3,12 @@ import type { Project } from "../../types";
 import ProjectsList from "../../components/ProjectsList";
 import { useState } from "react";
 import Pagination from "../../components/Pagination";
-import { supabase } from "../../lib/supabase.server";
+import { createSupabaseClient } from "../../lib/supabase.server";
 
 export async function loader({
   request,
 }: Route.LoaderArgs): Promise<{ projects: Project[] }> {
+  const { supabase } = createSupabaseClient(request);
   const { data, error } = await supabase.from("projects").select("*");
   if (error) throw new Error("Failed to fetch projects");
   return { projects: data };
